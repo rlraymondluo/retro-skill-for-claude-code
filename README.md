@@ -1,17 +1,22 @@
 # retro — Session Cleanup & Retrospective for Claude Code
 
-A Claude Code skill that runs a post-session retrospective: cleans up stray processes and temp files, then reviews what went well, what didn't, and saves actionable learnings to memory.
+A Claude Code plugin that runs a post-session retrospective: cleans up stray processes and temp files, then reviews what went well, what didn't, and saves actionable learnings to memory.
+
+## Prerequisites
+
+- [Claude Code](https://docs.anthropic.com/en/docs/claude-code) v1.0.33 or later
 
 ## Installation
 
-**Via plugin marketplace** (once registered):
-```bash
-/install retro@rlraymondluo
+**From the official marketplace:**
+```
+/plugin install retro
 ```
 
-**Manual install:**
-```bash
-git clone https://github.com/rlraymondluo/retro-skill-for-claude-code.git ~/.claude/plugins/retro-skill-for-claude-code
+**From the self-hosted marketplace:**
+```
+/plugin marketplace add rlraymondluo/retro-skill-for-claude-code
+/plugin install retro@rlraymondluo
 ```
 
 Restart Claude Code after installing.
@@ -21,8 +26,10 @@ Restart Claude Code after installing.
 After completing your main task in a session, run:
 
 ```
-/retro
+/retro:retro
 ```
+
+The skill will ask for confirmation before killing any processes or deleting any files.
 
 ## What it does
 
@@ -83,6 +90,13 @@ Proposed memory entries:
    configuring callback URLs"
    → Approve / Edit / Skip?
 ```
+
+## Scope & Safety
+
+- **Process cleanup**: Only targets processes that were started during the current Claude Code session (identified from conversation history). Your personal apps, editors, and background services are never touched.
+- **File cleanup**: Only flags temp files that were explicitly created during the session (build artifacts, test fixtures, scratch files). Does not scan or delete files outside the working directory.
+- **Confirmation required**: The skill always presents what it found and waits for your approval before killing processes or deleting files. Ambiguous items are flagged for you to decide.
+- **Memory saving**: Proposed learnings are shown to you for review before saving. Each entry can be approved, edited, or skipped.
 
 ## License
 
