@@ -10,7 +10,10 @@
       "name": "retro",
       "description": "Post-session cleanup and retrospective skill for Claude Code",
       "category": "productivity",
-      "source": ".",
+      "source": {
+        "source": "github",
+        "repo": "rlraymondluo/retro-skill-for-claude-code"
+      },
       "homepage": "https://github.com/rlraymondluo/retro-skill-for-claude-code"
     }
   ]
