@@ -1,7 +1,7 @@
 {
   "name": "retro",
   "description": "Post-session cleanup and retrospective skill for Claude Code — cleans up stray processes/temp files and saves learnings to memory",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "author": {
     "name": "Raymond Luo"
   },

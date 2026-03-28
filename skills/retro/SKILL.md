@@ -55,9 +55,24 @@ Go through the full conversation from start to finish. Identify patterns, not ju
 - [Actionable insights. Each learning should be something that would change behavior in a future session. "When working with X, always check Y first because Z" is good. "X can be tricky" is not.]
 ```
 
-**After presenting the retro, save learnings to memory.**
+### Phase 3: Aggressive Memory Extraction
 
-Use judgment to scope each learning to the right place:
+This is the most important phase. The retro is only useful if learnings actually get saved to memory. **Default to saving, not skipping.** When in doubt, save it — a slightly redundant memory is far less costly than a lost insight that leads to repeating a mistake.
+
+**HARD RULE: Mine every one of these signal types from the conversation. If any occurred, they MUST produce at least one memory entry:**
+
+| Signal | What to extract | Why it matters |
+|--------|----------------|----------------|
+| **User corrections** | Any time the user said "no", "don't", "stop", "not like that", or redirected your approach. Save the correction as a feedback memory with the anti-pattern and the correct behavior. | Highest-signal learning. The user explicitly told you something was wrong. Missing this means they'll have to correct you again. |
+| **User confirmations of non-obvious choices** | Any time the user approved an unusual approach, said "yes exactly", "perfect", or accepted something without pushback that could have gone either way. | Positive reinforcement is invisible — if you only save corrections, you'll drift away from validated approaches. |
+| **Pivots and dead ends** | Any time the approach changed mid-session — a strategy that didn't work, a tool that failed, a wrong assumption that had to be corrected. | Future sessions will try the same wrong approach unless warned. Save what failed and why. |
+| **Surprising discoveries** | Anything about the codebase, tools, APIs, or environment that was non-obvious and took effort to find. | If it took you 10 minutes to discover, save the 10 seconds it'll take to read the memory. |
+| **New project context** | New information about the project's goals, architecture decisions, team dynamics, deadlines, or constraints that aren't in the code. | Project context decays fastest — if you don't capture it now, it's gone. |
+| **Tool/workflow insights** | A tool, command, or workflow pattern that was particularly effective or ineffective for this type of task. | Builds institutional knowledge about how to work efficiently. |
+
+**Minimum extraction target: If the session involved any real work (not just a quick question), you should produce at least 3 memory entries.** If you're finding fewer than 3, you're not looking hard enough. Re-read the conversation and check each signal type above.
+
+**Scope each learning to the right place:**
 
 | Scope | Where to save | When to use this scope |
 |-------|--------------|----------------------|
@@ -65,23 +80,26 @@ Use judgment to scope each learning to the right place:
 | **Global** | User-level memory dir | Learning applies across projects and is about general workflow, tool usage, or development patterns. E.g., "When starting a dev server, always check if the port is already in use first — killed 15 minutes last time" or "Playwright's headed mode leaves zombie Chrome processes; always run cleanup after" |
 | **Feedback** | Feedback memory | Learning is about how Claude should behave — corrections the user made, approaches the user confirmed as good, or interaction patterns to repeat/avoid. E.g., "User prefers seeing the failing test output before discussing fixes" or "Don't refactor surrounding code when fixing a bug — user had to ask me to stop twice" |
 
-**What makes a good learning to save:**
-- Mistakes that burned real time or effort — the kind you'd kick yourself for repeating. Include enough context that a future session can recognize the same situation forming.
-- Approaches that worked surprisingly well or were non-obvious — things a future session wouldn't naturally try without being told. "Used browser devtools network tab to debug the API issue instead of adding logging" is worth saving if it was a breakthrough.
-- Non-obvious discoveries about the codebase, tools, or environment that aren't documented anywhere and would take time to rediscover. "The `build` script silently swallows errors when run with `--quiet` flag" saves future debugging time.
-- Corrections the user made — these are the highest-signal learnings because the user explicitly told you something was wrong. Always save these.
+**What NOT to save (narrow list — when in doubt, save it):**
+- Raw activity logs ("we did X then Y then Z") — save the *insight*, not the play-by-play
+- Things literally already in existing memory files with the same content
+- Standard practices any developer would know without being told
 
-**What NOT to save:**
-- Anything already captured in code, comments, git history, or existing documentation. If someone could find it by reading the codebase or running `git log`, it doesn't need to be in memory.
-- Standard practices or common knowledge. "Write tests before committing" or "Read error messages carefully" aren't learnings — they're basics.
-- Details that only matter for this exact task and won't recur. "We added a `getUserById` function to `api.ts`" is ephemeral — it's in the code now.
-- Raw activity logs. Don't save "we did X then Y then Z." Save the *insight* that came from doing X, Y, Z.
+That's it. Everything else is fair game. Err on the side of saving.
+
+**Why you can be aggressive:** Memory uses an index file (`MEMORY.md`) + separate detail files. Only the index loads into context — the detail files are only read when relevant. This means more memories do NOT bloat the context window. There is almost no cost to saving an extra learning, but there IS a cost to losing one. So save aggressively.
 
 **Before saving — deduplicate against existing memory:**
 1. Read `MEMORY.md` and scan existing memory files for overlap with each proposed learning.
-2. If an existing memory already covers the same topic, **update or append to that file** instead of creating a new one. For example, if there's already a `feedback_skill_writing.md` and you have a new insight about skill writing, add to it rather than creating `feedback_skill_writing_2.md`.
-3. Only create a new memory file if the learning is genuinely new territory not covered by any existing entry.
-4. Show the user each proposed entry — the content, the type (project/global/feedback), whether it's a **new file** or an **edit to an existing file**, and the filename. Let them approve, edit, or skip each one. Don't batch-save without review.
+2. If an existing memory already covers the same topic, **update or append to that file** instead of creating a new one.
+3. Only create a new memory file if the learning is genuinely new territory.
+
+**Then save. Present the full list of proposed entries to the user (content, type, filename, new vs. edit), then save them all immediately.** The user can tell you to revert any they disagree with — but the default is save, not ask-then-save. This prevents approval fatigue from killing good learnings.
+
+**Memory quality rules:**
+- Frame behavior-changing memories as hard rules with anti-pattern examples, not soft guidelines. "ALWAYS do X when Y" beats "Consider doing X."
+- Include enough **Why** context that a future session can judge edge cases, not just blindly follow.
+- Be specific. "The staging deploy script requires `--env=staging` even though the README says it auto-detects" beats "staging deploys can be tricky."
 
 ## Red Flags
 
@@ -92,3 +110,6 @@ Use judgment to scope each learning to the right place:
 | "This mistake was too small to save" | Small repeated mistakes compound. Save it. |
 | "This learning is too specific" | Specific learnings are the most actionable. Save it. |
 | "I'll skip the positive learnings" | Reinforcing good patterns is as valuable as avoiding bad ones. |
+| "Only 1-2 things to save" | You're not looking hard enough. Re-read the conversation against every signal type. |
+| "The user might not want this saved" | Save first, revert if asked. Lost learnings are worse than extra memories. |
+| "This is already kind of covered by an existing memory" | "Kind of" means it's NOT covered. Update the existing memory with the new nuance. |
